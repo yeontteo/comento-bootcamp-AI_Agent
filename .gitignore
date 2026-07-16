@@ -1,0 +1,22 @@
+# secrets
+.env
+
+# python
+__pycache__/
+*.pyc
+venv/
+.venv/
+
+# vector store (재생성 가능, git에 올리지 않음)
+backend/chroma_db/
+
+# node
+frontend/node_modules/
+frontend/dist/
+
+# temp
+temp_*.pdf
+desktop.ini
+
+# 제출용 압축 파일 (소스코드 아님)
+*.zip

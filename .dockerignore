@@ -1,0 +1,13 @@
+venv/
+frontend/node_modules/
+frontend/dist/
+**/__pycache__/
+.env
+legacy_week2/
+
+# 프로젝트 루트에 있는 참고용 원본 파일만 제외 (backend/data, frontend/src/assets는 유지)
+/*.pdf
+/*.pptx
+/*.jfif
+/*.png
+scratch_*
