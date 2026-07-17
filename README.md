@@ -29,13 +29,17 @@ backend/
     chain.py             # Hybrid Search 리트리버 + 멀티턴 RAG 체인
   data/
     manifest.json         # 문서별 부서/문서유형 메타데이터 등록
-    청주시청_민원_통합.pdf
+    cheongju_civil_docs.pdf
   chroma_db/             # 벡터 인덱스 영속 저장소 (자동 생성, git 제외)
 frontend/
-  src/App.jsx           # 채팅 UI (세션 유지, 출처 표시, 단계별 로딩 문구)
+  src/App.jsx           # 랜딩/채팅 화면 전환 라우터
+  src/LandingScreen.jsx    # 첫 화면
+  src/ChatScreen.jsx       # 채팅 UI (세션 유지, 출처 표시, 단계별 로딩 문구)
   src/api.js              # 백엔드 /chat 호출
 legacy_week2/            # 2주차 Streamlit+FAISS 프로토타입 (비교 참고용 보존)
 ```
+
+저장소 루트의 `*.pptx`, `*.png`는 과제 제출용 원본 자료로, 앱 실행에는 사용되지 않습니다. (기존에 함께 있던 중복 PDF는 `backend/data/cheongju_civil_docs.pdf`와 동일해 삭제했습니다.)
 
 ## 실행 방법
 
@@ -47,6 +51,7 @@ https://aistudio.google.com/apikey 에서 무료로 발급받아 `.env`의 `GOOG
 
 ```
 cd backend
+python -m venv ../venv        # 최초 1회
 ..\venv\Scripts\activate
 pip install -r requirements.txt   # 최초 1회
 uvicorn main:app --reload --port 8000
@@ -62,7 +67,7 @@ npm install   # 최초 1회
 npm run dev
 ```
 
-`http://localhost:5173` 접속. 기본적으로 `http://localhost:8000`의 백엔드를 호출하며, 다른 주소를 쓰려면 `frontend/.env`에 `VITE_API_BASE_URL`을 설정합니다.
+`http://localhost:5173` 접속. 로컬 개발 시 기본 백엔드 주소(`http://localhost:8000`)는 저장소에 커밋된 `frontend/.env.development`에 설정되어 있으며, 다른 주소를 쓰려면 이 파일을 수정하거나 `frontend/.env.local`을 새로 만들어 `VITE_API_BASE_URL`을 재정의합니다.
 
 ## 문서 추가 방법
 
