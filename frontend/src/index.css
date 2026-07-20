@@ -72,6 +72,18 @@ body {
   box-sizing: border-box;
 }
 
+/* 데스크탑: 채팅 카드가 화면 중앙에 뜨도록, 카드 주변에 은은한 배경을 깐다.
+   랜딩 화면과 모바일 채팅 화면은 자체 배경이 뷰포트를 항상 가득 채우므로 영향이 없다. */
+@media (min-width: 768px) {
+  body {
+    background: linear-gradient(135deg, var(--saengi-light) 0%, var(--bg) 45%, var(--myeongi-light) 100%);
+  }
+
+  #root {
+    justify-content: center;
+  }
+}
+
 *,
 *::before,
 *::after {

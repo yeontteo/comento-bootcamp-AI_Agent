@@ -8,6 +8,42 @@
   background: linear-gradient(180deg, var(--saengi-light) 0%, var(--bg) 18%);
 }
 
+/* 데스크탑: 화면 전체를 채우는 대신 떠 있는 카드 형태로 보여준다 */
+@media (min-width: 768px) {
+  .chat-app {
+    height: min(820px, calc(100svh - 48px));
+    margin: 24px auto;
+    border-radius: 24px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+}
+
+/* 작은 모바일 화면: 여백/폰트를 더 촘촘하게 */
+@media (max-width: 380px) {
+  .chat-header {
+    padding: 14px 16px;
+  }
+
+  .chat-window {
+    padding: 16px;
+  }
+
+  .bubble {
+    max-width: 88%;
+    padding: 10px 14px;
+  }
+
+  .bubble p {
+    font-size: 14px;
+  }
+
+  .chat-input {
+    padding: 12px 16px;
+  }
+}
+
 .chat-header {
   display: flex;
   align-items: center;

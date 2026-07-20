@@ -72,3 +72,38 @@
   opacity: 0.75;
   line-height: 1.5;
 }
+
+/* 데스크탑: 여유 있는 화면에 맞춰 카드/마스코트를 조금 더 크게 */
+@media (min-width: 768px) {
+  .landing-card {
+    max-width: 480px;
+  }
+
+  .landing-mascot {
+    max-width: 340px;
+  }
+
+  .landing-title {
+    font-size: 32px;
+  }
+
+  .landing-subtitle {
+    font-size: 16px;
+  }
+}
+
+/* 작은 모바일 화면: 여백/폰트를 더 촘촘하게 */
+@media (max-width: 380px) {
+  .landing {
+    padding: 24px 16px;
+  }
+
+  .landing-title {
+    font-size: 24px;
+  }
+
+  .landing-cta {
+    padding: 12px 26px;
+    font-size: 15px;
+  }
+}
