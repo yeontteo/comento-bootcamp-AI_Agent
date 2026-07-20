@@ -49,7 +49,7 @@ FALLBACK_ANSWER = (
 )
 
 RATE_LIMIT_ANSWER = (
-    "죄송합니다. 지금 요청이 많아 답변이 지연되고 있습니다. 잠시 후 다시 시도해 주세요."
+    "죄송합니다. 지금 요청이 몰리거나 서버가 일시적으로 혼잡합니다. 잠시 후 다시 시도해 주세요."
 )
 
 HISTORY_TURNS_KEPT = 3  # 컨텍스트 재구성에 사용할 최근 대화 턴 수
@@ -60,15 +60,23 @@ CHAT_MAX_RETRIES = 2
 CHAT_RETRY_DELAY_SEC = 3
 
 
+def _is_transient_error(e: Exception) -> bool:
+    """일시적으로 재시도하면 나아지는 에러인지 판단한다.
+    - RESOURCE_EXHAUSTED(429): 호출자(우리) 쪽 무료 티어 속도 제한
+    - UNAVAILABLE(503): Gemini 서버 자체의 일시적 과부하("high demand")
+    둘 다 메시지 문구는 다르지만 "잠시 후 다시 시도" 성격은 같다."""
+    text = str(e)
+    return "RESOURCE_EXHAUSTED" in text or "UNAVAILABLE" in text
+
+
 def _invoke_with_backoff(chain, inputs: dict):
-    """Gemini 무료 티어 429(RESOURCE_EXHAUSTED)에 한해 짧게 재시도한다.
+    """일시적 오류(429/503)에 한해 짧게 재시도한다.
     그 외 예외는 재시도하지 않고 즉시 상위로 올린다."""
     for attempt in range(CHAT_MAX_RETRIES + 1):
         try:
             return chain.invoke(inputs)
         except Exception as e:
-            is_rate_limited = "RESOURCE_EXHAUSTED" in str(e)
-            if is_rate_limited and attempt < CHAT_MAX_RETRIES:
+            if _is_transient_error(e) and attempt < CHAT_MAX_RETRIES:
                 wait = CHAT_RETRY_DELAY_SEC * (attempt + 1)
                 print(f"[chain] 속도 제한, {wait}초 대기 후 재시도 ({attempt + 1}/{CHAT_MAX_RETRIES})")
                 time.sleep(wait)
@@ -161,9 +169,8 @@ class RAGService:
                 self.answer_chain, {"context": _format_context(docs), "question": question}
             )
         except Exception as e:
-            is_rate_limited = "RESOURCE_EXHAUSTED" in str(e)
-            if is_rate_limited:
-                print(f"[RAGService] 속도 제한으로 답변 생성 실패: {e}")
+            if _is_transient_error(e):
+                print(f"[RAGService] 일시적 오류(속도 제한/서버 과부하)로 답변 생성 실패: {e}")
                 return {"answer": RATE_LIMIT_ANSWER, "sources": []}
             print(f"[RAGService] 답변 생성 실패: {e}")
             return {"answer": FALLBACK_ANSWER, "sources": []}
