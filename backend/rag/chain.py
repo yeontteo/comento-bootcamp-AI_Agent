@@ -1,3 +1,5 @@
+import time
+
 from langchain_classic.retrievers.ensemble import EnsembleRetriever
 from langchain_community.retrievers import BM25Retriever
 from langchain_core.messages import AIMessage, HumanMessage
@@ -47,6 +49,27 @@ FALLBACK_ANSWER = (
 )
 
 HISTORY_TURNS_KEPT = 3  # 컨텍스트 재구성에 사용할 최근 대화 턴 수
+
+# vectorstore.py의 배치 임베딩 백오프와 같은 목적이지만, 실시간 채팅은 사용자가
+# 화면 앞에서 기다리므로 재시도 횟수/대기 시간을 훨씬 짧게 둔다.
+CHAT_MAX_RETRIES = 2
+CHAT_RETRY_DELAY_SEC = 3
+
+
+def _invoke_with_backoff(chain, inputs: dict):
+    """Gemini 무료 티어 429(RESOURCE_EXHAUSTED)에 한해 짧게 재시도한다.
+    그 외 예외는 재시도하지 않고 즉시 상위로 올린다."""
+    for attempt in range(CHAT_MAX_RETRIES + 1):
+        try:
+            return chain.invoke(inputs)
+        except Exception as e:
+            is_rate_limited = "RESOURCE_EXHAUSTED" in str(e)
+            if is_rate_limited and attempt < CHAT_MAX_RETRIES:
+                wait = CHAT_RETRY_DELAY_SEC * (attempt + 1)
+                print(f"[chain] 속도 제한, {wait}초 대기 후 재시도 ({attempt + 1}/{CHAT_MAX_RETRIES})")
+                time.sleep(wait)
+            else:
+                raise
 
 
 def build_retriever(vectorstore, all_chunks, k: int = 5) -> EnsembleRetriever:
@@ -122,14 +145,17 @@ class RAGService:
 
         try:
             if history:
-                standalone_question = self.contextualize_chain.invoke(
-                    {"chat_history": _format_history(history), "question": question}
+                standalone_question = _invoke_with_backoff(
+                    self.contextualize_chain,
+                    {"chat_history": _format_history(history), "question": question},
                 ).strip()
             else:
                 standalone_question = question
 
             docs = self.retriever.invoke(standalone_question)
-            answer = self.answer_chain.invoke({"context": _format_context(docs), "question": question})
+            answer = _invoke_with_backoff(
+                self.answer_chain, {"context": _format_context(docs), "question": question}
+            )
         except Exception as e:
             print(f"[RAGService] 답변 생성 실패: {e}")
             return {"answer": FALLBACK_ANSWER, "sources": []}
