@@ -3,5 +3,45 @@
     "filename": "cheongju_civil_docs.pdf",
     "department": "종합민원과",
     "doc_type": "민원서식 통합본"
+  },
+  {
+    "filename": "resident_transfer_confirmation_form15.pdf",
+    "department": "민원과",
+    "doc_type": "전입세대확인서 열람·교부 신청서"
+  },
+  {
+    "filename": "culture_sports_center_permit_form1.pdf",
+    "department": "체육시설과",
+    "doc_type": "문화체육회관 사용(변경)허가 신청서"
+  },
+  {
+    "filename": "startup_tax_reduction_form1-4.pdf",
+    "department": "세무과",
+    "doc_type": "창업(벤처)중소기업 지방세 감면 신청서"
+  },
+  {
+    "filename": "medical_device_sales_report_form36.pdf",
+    "department": "위생정책과",
+    "doc_type": "의료기기 판매(임대)업 신고서"
+  },
+  {
+    "filename": "food_business_report_form37.pdf",
+    "department": "위생정책과",
+    "doc_type": "식품 영업 신고서"
+  },
+  {
+    "filename": "administrative_agent_license_form4.pdf",
+    "department": "자치행정과",
+    "doc_type": "행정사 자격증 발급 신청서"
+  },
+  {
+    "filename": "optical_shop_registration_form7.pdf",
+    "department": "위생정책과",
+    "doc_type": "안경업소 개설등록 신청서"
+  },
+  {
+    "filename": "family_relation_certificate_form11.pdf",
+    "department": "민원과",
+    "doc_type": "가족관계 등록사항별 증명서 교부 신청서"
   }
 ]
