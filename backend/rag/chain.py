@@ -48,6 +48,10 @@ FALLBACK_ANSWER = (
     "잠시 후 다시 시도해 주시거나, 청주시청 콜센터(☎ 043-200-2000)로 문의해 주세요."
 )
 
+RATE_LIMIT_ANSWER = (
+    "죄송합니다. 지금 요청이 많아 답변이 지연되고 있습니다. 잠시 후 다시 시도해 주세요."
+)
+
 HISTORY_TURNS_KEPT = 3  # 컨텍스트 재구성에 사용할 최근 대화 턴 수
 
 # vectorstore.py의 배치 임베딩 백오프와 같은 목적이지만, 실시간 채팅은 사용자가
@@ -157,6 +161,10 @@ class RAGService:
                 self.answer_chain, {"context": _format_context(docs), "question": question}
             )
         except Exception as e:
+            is_rate_limited = "RESOURCE_EXHAUSTED" in str(e)
+            if is_rate_limited:
+                print(f"[RAGService] 속도 제한으로 답변 생성 실패: {e}")
+                return {"answer": RATE_LIMIT_ANSWER, "sources": []}
             print(f"[RAGService] 답변 생성 실패: {e}")
             return {"answer": FALLBACK_ANSWER, "sources": []}
 
